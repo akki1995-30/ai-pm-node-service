@@ -1,23 +1,30 @@
 import { Request, Response } from "express";
 import Team from "../models/Team";
 
-export const createTeam = async (req: any, res: Response) => {
+interface AuthRequest extends Request {
+  userId?: string;
+}
+
+export const createTeam = async (req: AuthRequest, res: Response) => {
   try {
     const { name } = req.body;
 
-    const team = await Team.create({
-      name,
-      owner: req.userId
-    });
+    if (!name) {
+      return res.status(400).json({ message: "Team name is required" });
+    }
 
-    res.status(201).json(team);
-
-  } catch (error) {
-    res.status(500).json({ message: "Error creating team" });
+    const team = await Team.create({ name, owner: req.userId });
+    return res.status(201).json(team);
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
   }
 };
 
-export const getTeams = async (req: any, res: Response) => {
-  const teams = await Team.find({ owner: req.userId });
-  res.json(teams);
+export const getTeams = async (req: AuthRequest, res: Response) => {
+  try {
+    const teams = await Team.find({ owner: req.userId }).populate("owner", "name email");
+    return res.json(teams);
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
 };
