@@ -7,7 +7,6 @@ import { registerService, loginService, getMeService } from "../services/auth.se
 export const registerUser = async (req: Request, res: Response) => {
   try {
       const { name, email, password } = req.body;
-      console.log('req', req.originalUrl);
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
