@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface ITask extends Document {
   title: string;
+  description?: string;
   project: mongoose.Types.ObjectId;
   assignedTo: mongoose.Types.ObjectId;
   status: string;
@@ -10,6 +11,7 @@ export interface ITask extends Document {
 const TaskSchema = new Schema(
   {
     title: { type: String, required: true },
+    description: { type: String, default: "" },
 
     project: {
       type: Schema.Types.ObjectId,

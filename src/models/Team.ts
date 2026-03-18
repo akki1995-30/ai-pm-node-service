@@ -2,12 +2,14 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface ITeam extends Document {
   name: string;
+  description?: string;
   owner: mongoose.Types.ObjectId;
 }
 
 const TeamSchema = new Schema(
   {
     name: { type: String, required: true },
+    description: { type: String, default: "" },
     owner: { type: Schema.Types.ObjectId, ref: "User" }
   },
   { timestamps: true }
