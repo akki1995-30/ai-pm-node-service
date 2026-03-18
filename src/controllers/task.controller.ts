@@ -8,13 +8,13 @@ interface AuthRequest extends Request {
 /* POST /tasks */
 export const createTask = async (req: AuthRequest, res: Response) => {
   try {
-    const { title, projectId, assignedTo } = req.body;
+    const { title, description, projectId, assignedTo } = req.body;
 
     if (!title || !projectId) {
       return res.status(400).json({ message: "title and projectId are required" });
     }
 
-    const task = await createTaskService(title, projectId, assignedTo, req.userId!);
+    const task = await createTaskService(title, description || "", projectId, assignedTo, req.userId!);
     return res.status(201).json(task);
   } catch (error: any) {
     const status = error.message === "Project not found" ? 404
@@ -26,7 +26,7 @@ export const createTask = async (req: AuthRequest, res: Response) => {
 /* GET /tasks/:projectId */
 export const getTasks = async (req: any, res: Response) => {
   try {
-    const { projectId } = req.params;
+      const { projectId } = req.params;
     const tasks = await getTasksService(projectId);
     return res.json(tasks);
   } catch (error: any) {

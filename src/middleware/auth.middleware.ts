@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-
-// const JWT_SECRET = process.env.JWT_SECRET as string;
+import { UserRole } from "../models/User";
 
 export interface AuthRequest extends Request {
   userId?: string;
+  userRole?: UserRole;
 }
 
 const authMiddleware = (
@@ -13,7 +13,7 @@ const authMiddleware = (
   next: NextFunction
 ) => {
   try {
-      const authHeader = req.headers.authorization;
+    const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
@@ -23,9 +23,10 @@ const authMiddleware = (
 
     const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string; role: UserRole };
 
-    req.userId = decoded.id;
+    req.userId   = decoded.id;
+    req.userRole = decoded.role;
 
     next();
   } catch (error) {

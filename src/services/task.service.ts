@@ -1,9 +1,11 @@
 import Task from "../models/Task";
 import Project from "../models/Project";
-import Team from "../models/Team";
+import TeamMember from "../models/TeamMember";
+import { TeamRole } from "../models/TeamMember";
 
 export const createTaskService = async (
   title: string,
+  description: string,
   projectId: string,
   assignedTo: string | undefined,
   userId: string
@@ -13,12 +15,13 @@ export const createTaskService = async (
     throw new Error("Project not found");
   }
 
-  const team = await Team.findOne({ _id: project.team, owner: userId });
-  if (!team) {
+  // Verify user is a MANAGER or MEMBER in the project's team (VIEWER cannot create tasks)
+  const membership = await TeamMember.findOne({ team: project.team, user: userId });
+  if (!membership || !([TeamRole.MANAGER, TeamRole.MEMBER] as string[]).includes(membership.role)) {
     throw new Error("Not authorized to create tasks in this project");
   }
 
-  return Task.create({ title, project: projectId, assignedTo });
+  return Task.create({ title, description, project: projectId, assignedTo });
 };
 
 export const getTasksService = async (projectId: string) => {
