@@ -9,6 +9,7 @@ import projectRoutes from "./routes/project.routes";
 import taskRoutes from "./routes/task.routes";
 import teamRoutes from "./routes/team.routes";
 import logger from "./utils/logger";
+import { startHealthCheckCron } from "./cron/healthCheck.cron";
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ const startServer = async () => {
 
   app.listen(PORT, () => {
     logger.info(`Node service running on port ${PORT}`);
+    startHealthCheckCron();
   });
 };
 
